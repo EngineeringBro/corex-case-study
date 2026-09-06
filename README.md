@@ -21,6 +21,27 @@ and payment-reconciliation requests. Volume grew roughly six-fold between 2023
 and 2025 (5,284 → 31,881 tickets/year). Most tickets followed repeatable
 patterns, yet each still consumed tier-1 minutes.
 
+## Evidence before automation
+
+Before automating anything, I measured what was actually there. Across **50,631
+production tickets**:
+
+| | |
+|---|---|
+| Closed with **zero human comments** | 33,536 (66%) |
+| Notification-class traffic | 29,153 (58%) |
+| ...of those, closed with zero comments | **27,594 (95%)** |
+| One alert profile alone | 1,340 tickets → 1,333 zero-comment (99.5%) |
+
+That 95% is the number that mattered. A ticket closed without a single comment
+is a ticket nobody thought about — someone opened it, recognised it as noise and
+closed it. It is pure clicking, and it is safe to automate precisely because no
+judgement was ever applied.
+
+Automating that class removed roughly **150 tickets a week**, an estimated **13
+hours a week** of manual triage (at the 5-minute-per-ticket handling estimate
+used in the internal metrics).
+
 ## The system
 
 ```mermaid
@@ -111,7 +132,8 @@ inside email signatures.
 
 | | |
 |---|---|
-| Tickets processed | 50,630 (2023–2026) |
+| Tickets analysed | 50,631 (2023–2026) |
+| Automatable share identified | 58% (29,153) |
 | Knowledge-base articles | 654, chunked and embedded |
 | Modules | 5 active, plus a future-capability taxonomy |
 | Dashboard routes | 35 |
