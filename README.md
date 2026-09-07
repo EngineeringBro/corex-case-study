@@ -1,15 +1,12 @@
-# COREX — AI Agent for a Live Support Queue
+# COREX — AI Agent for Live Support Operations
 
 An autonomous agent that works a Jira support queue like a tier-1 engineer:
 it reads each incoming ticket, classifies it, drafts the fix or reply, and
 files its work for human sign-off.
 
-This repository is the **case study**. The source code lives in a private
-repository — available to reviewers on request.
+![Live Dashboard Metrics](screenshots/dashboard.png)
 
-> All company, client and person names shown here are fictional. The system
-> was built against real production traffic; everything public was put through
-> a custom anonymization pipeline and verified by independent scanners.
+> **Case Study Overview:** The source code and live queue integration live in a private enterprise repository — full architecture walkthroughs and live execution are available to reviewers on request. All company, client, and personal identifiers have been sanitized with an automated CI-enforced privacy pipeline.
 
 ---
 
@@ -38,9 +35,7 @@ is a ticket nobody thought about — someone opened it, recognised it as noise a
 closed it. It is pure clicking, and it is safe to automate precisely because no
 judgement was ever applied.
 
-Automating that class removed roughly **150 tickets a week**, an estimated **13
-hours a week** of manual triage (at the 5-minute-per-ticket handling estimate
-used in the internal metrics).
+Initial notification automation removed roughly **150 tickets a week**, returning an estimated **13 hours a week** of manual triage. Expanding the system across 5 specialized resolution modules and policy-grounded priority adjustment scaled operational impact to **273 tickets/week and ~60 hours/week saved** (as tracked in the live dashboard above).
 
 ## The system
 
@@ -130,12 +125,15 @@ inside email signatures.
 
 ## Scale
 
-| | |
+| Metric | Measured Impact |
 |---|---|
-| Tickets analysed | 50,631 (2023–2026) |
+| Historical tickets analysed | 50,631 (2023–2026) |
 | Automatable share identified | 58% (29,153) |
-| Knowledge-base articles | 654, chunked and embedded |
-| Modules | 5 active, plus a future-capability taxonomy |
+| Production run-rate | **273 tickets/week · ~60h/week saved** |
+| Overall resolution rate | **87%** (24% autonomous · 63% human-confirmed) |
+| Knowledge-base articles | 654, chunked and embedded (1536-dim) |
+| Active modules | 5 resolution modules + priority adjustment |
+| Pipeline latency | 0.4s auto-execute · 0.2s write execution |
 | Dashboard routes | 35 |
 | Access control | 4 roles, 18 feature toggles |
 
@@ -148,13 +146,11 @@ faster-whisper
 Model routing is cost-tiered: a small model rewrites, a mid model synthesises,
 a frontier model backs the experimental Labs tools.
 
-## Demo
+## Demo & Technical Walkthrough
 
-![Dashboard Metrics](screenshots/dashboard.png)
-
-The live operational dashboard tracks automated pipeline speeds, module resolution ratios (auto-resolved vs. human-confirmed), estimated time saved, and upcoming module candidates. Detailed walkthroughs and live execution demos are available during technical reviews.
+Detailed architecture walkthroughs, system diagrams, and live execution demos of the operator interface, prompt/eval loops, and database automation can be demonstrated during technical interview rounds.
 
 ---
 
-**Hussein Shaib** — [LinkedIn](https://www.linkedin.com/in/hussein-shaib/) ·
-source available to reviewers on request.
+**Hussein Shaib** — [LinkedIn](https://www.linkedin.com/in/hussein-shaib/) · [GitHub](https://github.com/EngineeringBro)  
+*Full source code and live demo available to reviewers on request.*
