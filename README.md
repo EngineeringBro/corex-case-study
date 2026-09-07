@@ -150,20 +150,11 @@ a frontier model backs the experimental Labs tools.
 
 ## Demo
 
-<!-- Drop 1920x1080 captures into screenshots/ and swap this block for:
-| | |
-|---|---|
-| ![Dashboard](screenshots/dashboard.png) | ![Metrics](screenshots/metrics.png) |
-| ![Proposal](screenshots/proposal-detail.png) | ![Labs](screenshots/labs.png) |
--->
+![Dashboard Metrics](screenshots/dashboard.png)
 
-Walkthrough video and screenshots: _coming shortly._
-
-The dashboard shows the proposal queue with per-module filters; the metrics
-page breaks down volume, time saved and confidence calibration; proposal detail
-exposes the confidence reasons and guardrail results behind every suggestion.
+The live operational dashboard tracks automated pipeline speeds, module resolution ratios (auto-resolved vs. human-confirmed), estimated time saved, and upcoming module candidates. Detailed walkthroughs and live execution demos are available during technical reviews.
 
 ---
 
-**Hussein Chaib** — [LinkedIn](https://www.linkedin.com/) ·
+**Hussein Shaib** — [LinkedIn](https://www.linkedin.com/in/hussein-shaib/) ·
 source available to reviewers on request.
