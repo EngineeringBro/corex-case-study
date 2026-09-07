@@ -131,11 +131,11 @@ The project was not built in a single leap — it progressed through structured 
 
 The initial version proved the thesis: a decoupled core engine coordinating specialized, swappable resolution modules (notifications, spam, general, and deep workflows) with an asynchronous orchestrator and deterministic gatekeeping.
 
-[![Stage-1 Showcase Preview](screenshots/stage-1-showcase.png)](docs/stage-1-showcase.html)
+![Stage-1 Showcase Live Animation](screenshots/stage-1-showcase.gif)
 
-> 💡 **Experience the Interactive Stage-1 Prototype:**  
-> The complete Stage-1 interactive showcase with CSS keyframe particle loops, orbital animations, interactive module tabs, and step-by-step orchestrator inspection is preserved standalone:  
-> 👉 **[Open docs/stage-1-showcase.html](docs/stage-1-showcase.html)** *(clone repo and open in any modern browser)*
+> 🌐 **Live Interactive Showcase (No Download Needed):**  
+> Experience the full prototype live with CSS orbital particle loops, interactive step-by-step orchestrator tabs, and module switching directly in your browser:  
+> 👉 **[https://engineeringbro.github.io/corex-case-study/](https://engineeringbro.github.io/corex-case-study/)** *(or open [docs/stage-1-showcase.html](docs/stage-1-showcase.html) locally)*
 
 ```
 Stage 1: Cognitive Engine  →  Stage 2: Machine Learning  →  Stage 3: Symbolic Reasoning  →  Stage 4: Neuro-Symbolic AI
