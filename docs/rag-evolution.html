@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>COREX — RAG Architecture Evolution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #fafbfc;
+    --panel: #ffffff;
+    --ink: #1a2332;
+    --ink-soft: #5b6776;
+    --line: #e3e7ec;
+    --line-strong: #c9d1da;
+    --accent-1: #4f86c6;   /* steel blue — retrieval */
+    --accent-2: #6f9d52;   /* sage — synthesis */
+    --accent-3: #c9904a;   /* amber — verify / agent */
+    --accent-4: #8d6dbf;   /* muted purple — tool */
+    --accent-5: #6b7280;   /* slate gray — considered */
+    --tag-archived: #b94a48;
+    --tag-current:  #2f7a45;
+    --tag-considered: #4b5563;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  header { padding: 36px 48px 18px; border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 6px; font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--ink-soft); font-size: 15px; max-width: 760px; }
+  .lineup {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(280px, 1fr));
+    gap: 18px;
+    padding: 28px 48px 24px;
+  }
+  @media (max-width: 1180px) { .lineup { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 720px)  { .lineup { grid-template-columns: 1fr; padding: 20px; } }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 18px 20px;
+    display: flex; flex-direction: column;
+    min-height: 100%;
+  }
+  .step  { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+           color: var(--ink-soft); margin-bottom: 4px; }
+  .name  { font-size: 17px; font-weight: 600; margin: 0 0 6px; }
+  .tag   { display: inline-block; font-size: 10.5px; padding: 2px 8px;
+           border-radius: 999px; margin-bottom: 12px; font-weight: 600;
+           letter-spacing: 0.04em; text-transform: uppercase; }
+  .tag.archived   { background: #fbecec; color: var(--tag-archived); }
+  .tag.current    { background: #e6f4ea; color: var(--tag-current); }
+  .tag.considered { background: #eef0f3; color: var(--tag-considered); }
+
+  .diagram { display: flex; justify-content: center; padding: 8px 0 14px;
+             border-bottom: 1px dashed var(--line); margin-bottom: 14px; }
+
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+                   text-transform: uppercase; color: var(--ink-soft); margin: 10px 0 4px; }
+  .how, .why { font-size: 13.5px; color: var(--ink); margin: 0 0 8px; }
+  .why { color: #6a4040; }
+  footer { padding: 14px 48px 36px; color: var(--ink-soft); font-size: 12px;
+           border-top: 1px solid var(--line); }
+  code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px;
+         font-size: 12.5px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+  /* SVG defaults */
+  svg .box { fill: #fff; stroke: var(--line-strong); stroke-width: 1.2; }
+  svg .box-r { fill: #eef3f9; stroke: var(--accent-1); }
+  svg .box-s { fill: #eef5e8; stroke: var(--accent-2); }
+  svg .box-v { fill: #faf1e3; stroke: var(--accent-3); }
+  svg .box-t { fill: #f1ecf8; stroke: var(--accent-4); }
+  svg .box-big { fill: #f3f4f6; stroke: var(--accent-5); stroke-width: 1.4; }
+  svg text  { fill: var(--ink); font: 11.5px -apple-system, "Segoe UI", sans-serif;
+              text-anchor: middle; dominant-baseline: middle; }
+  svg .small { font-size: 10px; fill: var(--ink-soft); }
+  svg .arrow { stroke: var(--line-strong); stroke-width: 1.4; fill: none; }
+  svg .arrow-loop { stroke: var(--accent-3); stroke-width: 1.4; fill: none;
+                    stroke-dasharray: 4 3; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>COREX — Retrieval Architecture Evolution</h1>
+  <p>How the general-module's retrieval pipeline changed over four iterations.
+     Each stage solved the problem the previous one couldn't, and traded off
+     something the next one fixed.</p>
+</header>
+
+<section class="lineup">
+
+  <!-- =================== 1. RERANKER =================== -->
+  <article class="card">
+    <div class="step">Iteration 1</div>
+    <h2 class="name">Retrieval + LLM Reranker</h2>
+    <span class="tag archived">Archived</span>
+
+    <div class="diagram">
+      <svg width="240" height="280" viewBox="0 0 240 280">
+        <rect class="box" x="80" y="10" width="80" height="32" rx="6"/>
+        <text x="120" y="26">Query</text>
+
+        <path class="arrow" d="M120,42 L120,64" marker-end="url(#a2)"/>
+
+        <rect class="box box-r" x="40" y="64" width="160" height="40" rx="6"/>
+        <text x="120" y="78">Dense Retrieval</text>
+        <text x="120" y="92" class="small">broad recall · top 50</text>
+
+        <path class="arrow" d="M120,104 L120,126" marker-end="url(#a2)"/>
+
+        <rect class="box box-v" x="30" y="126" width="180" height="40" rx="6"/>
+        <text x="120" y="140">LLM Reranker</text>
+        <text x="120" y="154" class="small">re-scores by relevance</text>
+
+        <path class="arrow" d="M120,166 L120,188" marker-end="url(#a2)"/>
+
+        <rect class="box" x="60" y="188" width="120" height="30" rx="6"/>
+        <text x="120" y="203">Top-K Chunks</text>
+
+        <path class="arrow" d="M120,218 L120,238" marker-end="url(#a2)"/>
+
+        <rect class="box box-s" x="50" y="238" width="140" height="30" rx="6"/>
+        <text x="120" y="253">LLM Synthesizer</text>
+
+        <defs>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--line-strong)"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="section-label">How it worked</div>
+    <p class="how">Retriever cast a wide net (top-50 by vector
+       similarity), then a second LLM call re-ranked those candidates
+       by actual relevance to the ticket. The synthesizer only saw
+       the top few survivors.</p>
+
+    <div class="section-label">Why we moved on</div>
+    <p class="why">Reranker added a full extra LLM hop per query — slow
+       and expensive — but couldn't fix bad retrieval, only re-sort it.
+       If the right chunk wasn't in the top-50, reranking didn't help.</p>
+  </article>
+
+  <!-- =================== 2. HYBRID RAG =================== -->
+  <article class="card">
+    <div class="step">Iteration 2</div>
+    <h2 class="name">Hybrid RAG (BM25 + RRF)</h2>
+    <span class="tag archived">Archived</span>
+
+    <div class="diagram">
+      <svg width="240" height="280" viewBox="0 0 240 280">
+        <!-- Query -->
+        <rect class="box" x="80" y="10" width="80" height="32" rx="6"/>
+        <text x="120" y="26">Query</text>
+
+        <path class="arrow" d="M120,42 L120,72" marker-end="url(#a1)"/>
+
+        <!-- BM25 (centered) -->
+        <rect class="box box-r" x="60" y="72" width="120" height="40" rx="6"/>
+        <text x="120" y="86">BM25 Lexical</text>
+        <text x="120" y="100" class="small">keyword + query variants</text>
+
+        <path class="arrow" d="M120,112 L120,138" marker-end="url(#a1)"/>
+
+        <!-- RRF merge -->
+        <rect class="box box-r" x="50" y="138" width="140" height="40" rx="6"/>
+        <text x="120" y="152">RRF Merge</text>
+        <text x="120" y="166" class="small">reciprocal rank fusion</text>
+
+        <path class="arrow" d="M120,178 L120,200" marker-end="url(#a1)"/>
+
+        <!-- Synth -->
+        <rect class="box box-s" x="50" y="200" width="140" height="36" rx="6"/>
+        <text x="120" y="214">LLM Synthesizer</text>
+        <text x="120" y="228" class="small">writes answer</text>
+
+        <path class="arrow" d="M120,236 L120,256" marker-end="url(#a1)"/>
+
+        <!-- Answer -->
+        <rect class="box" x="80" y="256" width="80" height="22" rx="5"/>
+        <text x="120" y="267">Answer</text>
+
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--line-strong)"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="section-label">How it worked</div>
+    <p class="how">Lexical retrieval (BM25) ran against multiple query
+       variants for the same ticket, and the ranked lists were merged
+       with reciprocal rank fusion. Docs ranking high across several
+       phrasings floated to the top.</p>
+
+    <div class="section-label">Why we moved on</div>
+    <p class="why">Lexical-only hybrid handled error codes and exact
+       strings well but missed rephrased questions. The added complexity
+       of merging multiple rankings didn't earn its keep once we had a
+       smarter agent that could decide what to fetch.</p>
+  </article>
+
+  <!-- =================== 3. SELF-RAG =================== -->
+  <article class="card">
+    <div class="step">Iteration 3</div>
+    <h2 class="name">Self-RAG (Verifier Loop)</h2>
+    <span class="tag archived">Archived</span>
+
+    <div class="diagram">
+      <svg width="240" height="280" viewBox="0 0 240 280">
+        <rect class="box" x="80" y="10" width="80" height="28" rx="6"/>
+        <text x="120" y="24">Query</text>
+
+        <path class="arrow" d="M120,38 L120,58" marker-end="url(#a3)"/>
+
+        <rect class="box box-r" x="50" y="58" width="140" height="32" rx="6"/>
+        <text x="120" y="74">Dense Retrieval</text>
+
+        <path class="arrow" d="M120,90 L120,110" marker-end="url(#a3)"/>
+
+        <rect class="box box-s" x="40" y="110" width="160" height="36" rx="6"/>
+        <text x="120" y="123">LLM Synthesizer</text>
+        <text x="120" y="137" class="small">draft answer</text>
+
+        <path class="arrow" d="M120,146 L120,166" marker-end="url(#a3)"/>
+
+        <rect class="box box-v" x="40" y="166" width="160" height="36" rx="6"/>
+        <text x="120" y="179">LLM Verifier</text>
+        <text x="120" y="193" class="small">does it answer the ticket?</text>
+
+        <!-- pass arrow down -->
+        <path class="arrow" d="M120,202 L120,228" marker-end="url(#a3)"/>
+
+        <!-- loop arrow back to retrieval -->
+        <path class="arrow-loop"
+              d="M40,184 C10,184 10,74 50,74" marker-end="url(#a3l)"/>
+        <text x="14" y="130" class="small" transform="rotate(-90 14 130)">retry</text>
+
+        <rect class="box" x="80" y="228" width="80" height="26" rx="5"/>
+        <text x="120" y="241">Answer</text>
+
+        <defs>
+          <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--line-strong)"/>
+          </marker>
+          <marker id="a3l" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-3)"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="section-label">How it worked</div>
+    <p class="how">After drafting an answer, a separate verifier LLM
+       checked whether the draft actually grounded its claims in the
+       retrieved chunks. If not, it looped back and retrieved again
+       with a refined query.</p>
+
+    <div class="section-label">Why we moved on</div>
+    <p class="why">The loop guarded against hallucinations but at 2–3×
+       the cost. The verifier was effectively a planner — so we moved
+       the planning <em>before</em> retrieval (let the model choose
+       what to fetch) rather than checking after.</p>
+  </article>
+
+  <!-- =================== 4. TOOL-USING AGENT =================== -->
+  <article class="card">
+    <div class="step">Iteration 4</div>
+    <h2 class="name">Tool-Using Agent</h2>
+    <span class="tag current">Current</span>
+
+    <div class="diagram">
+      <svg width="260" height="380" viewBox="0 0 260 380">
+        <defs>
+          <!-- dense pattern showing many chunks/vectors -->
+          <pattern id="vectorgrid" width="14" height="9" patternUnits="userSpaceOnUse">
+            <rect x="1" y="1" width="11" height="6" rx="1"
+                  fill="#dde7f1" stroke="#7a9dc4" stroke-width="0.5"/>
+          </pattern>
+          <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--line-strong)"/>
+          </marker>
+          <marker id="a4l" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-4)"/>
+          </marker>
+        </defs>
+
+        <!-- Query -->
+        <rect class="box" x="90" y="6" width="80" height="24" rx="6"/>
+        <text x="130" y="18">Query</text>
+
+        <path class="arrow" d="M130,30 L130,46" marker-end="url(#a4)"/>
+
+        <!-- LLM Agent -->
+        <rect class="box box-t" x="50" y="46" width="160" height="36" rx="6"/>
+        <text x="130" y="59">LLM Agent</text>
+        <text x="130" y="73" class="small">decides what to fetch · max 6 calls</text>
+
+        <!-- arrows to 3 tools -->
+        <path class="arrow" d="M90,82 L50,106" marker-end="url(#a4)"/>
+        <path class="arrow" d="M130,82 L130,106" marker-end="url(#a4)"/>
+        <path class="arrow" d="M170,82 L210,106" marker-end="url(#a4)"/>
+
+        <!-- 3 tools -->
+        <rect class="box box-r" x="15" y="106" width="70" height="32" rx="6"/>
+        <text x="50" y="118" class="small">semantic</text>
+        <text x="50" y="130" class="small">search</text>
+
+        <rect class="box box-r" x="95" y="106" width="70" height="32" rx="6"/>
+        <text x="130" y="118" class="small">grep</text>
+        <text x="130" y="130" class="small">exact text</text>
+
+        <rect class="box box-r" x="175" y="106" width="70" height="32" rx="6"/>
+        <text x="210" y="118" class="small">read</text>
+        <text x="210" y="130" class="small">article</text>
+
+        <!-- loop back curve -->
+        <path class="arrow-loop"
+              d="M50,138 C20,168 240,168 210,138" marker-end="url(#a4l)"/>
+        <text x="130" y="164" class="small">loop · chunks accumulate</text>
+
+        <!-- divider before the batch -->
+        <line x1="20" y1="188" x2="240" y2="188"
+              stroke="#e3e7ec" stroke-dasharray="3 3"/>
+        <text x="130" y="202" class="small" style="font-weight:600; fill:#1a2332;">
+          when agent is done → all chunks sent at once
+        </text>
+
+        <!-- vector batch: dense grid (5 rows × 14 cols visible) -->
+        <rect x="22" y="212" width="216" height="45" rx="3"
+              fill="url(#vectorgrid)" stroke="var(--accent-1)" stroke-width="1.2"/>
+        <text x="130" y="272" class="small" style="font-weight:600;">
+          ≈ 5–60 chunks · each a 1,536-D vector
+        </text>
+        <text x="130" y="285" class="small">bundled into one prompt</text>
+
+        <!-- arrow into synth -->
+        <path class="arrow" d="M130,294 L130,312" marker-end="url(#a4)"/>
+
+        <!-- LLM Synthesizer -->
+        <rect class="box box-s" x="60" y="312" width="140" height="32" rx="6"/>
+        <text x="130" y="328">LLM Synthesizer</text>
+
+        <!-- arrow to answer -->
+        <path class="arrow" d="M130,344 L130,360" marker-end="url(#a4)"/>
+
+        <!-- Final Answer -->
+        <rect class="box" x="90" y="360" width="80" height="18" rx="5"/>
+        <text x="130" y="369">Final Answer</text>
+      </svg>
+    </div>
+
+    <div class="section-label">How it worked</div>
+    <p class="how">No fixed pipeline. The model itself decides what to
+       retrieve and when to stop. Three tools available: semantic search
+       (dense, 1536-D embeddings, <strong>5–10 chunks per call</strong>),
+       exact-text grep, and full article read.</p>
+
+    <div class="section-label">Vectors sent per ticket</div>
+    <p class="how"><strong>~5–60 chunks total</strong> (5–10 per call ×
+       up to 6 tool calls). Most tickets resolve in 1–2 calls, so the
+       typical model sees 5–20 chunks out of 4,642.</p>
+
+    <div class="section-label">Why it stuck</div>
+    <p class="why" style="color: var(--tag-current);">Retrieval becomes
+       <em>adaptive</em> — easy tickets need one search, hard ones can
+       grep for an error code then expand to the full article. One
+       model in the loop instead of three. Currently in production.</p>
+  </article>
+
+</section>
+
+<footer>
+  KB index: 4,642 chunks · 1,536-D embeddings · <code>text-embedding-3-small</code> ·
+  Tool default <code>k=5</code>, max <code>k=10</code> per call, up to <code>6</code> calls per ticket.
+</footer>
+
+</body>
+</html>

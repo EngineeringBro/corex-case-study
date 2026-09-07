@@ -123,6 +123,55 @@ The gate earned its place immediately — it caught 24 real phone numbers that m
 first two verification passes had missed, in UK and Chinese formats buried
 inside email signatures.
 
+## Architecture Evolution & Project Progression
+
+The project was not built in a single leap — it progressed through structured architectural intervals, moving from initial concept and single-queue automation to a multi-stage cognitive platform and an enterprise multi-department foundation.
+
+### 1. Stage-1 Architecture & Foundation (Interactive Showcase)
+
+The initial version proved the thesis: a decoupled core engine coordinating specialized, swappable resolution modules (notifications, spam, general, and deep workflows) with an asynchronous orchestrator and deterministic gatekeeping.
+
+[![Stage-1 Showcase Preview](screenshots/stage-1-showcase.png)](docs/stage-1-showcase.html)
+
+> 💡 **Experience the Interactive Stage-1 Prototype:**  
+> The complete Stage-1 interactive showcase with CSS keyframe particle loops, orbital animations, interactive module tabs, and step-by-step orchestrator inspection is preserved standalone:  
+> 👉 **[Open docs/stage-1-showcase.html](docs/stage-1-showcase.html)** *(clone repo and open in any modern browser)*
+
+```
+Stage 1: Cognitive Engine  →  Stage 2: Machine Learning  →  Stage 3: Symbolic Reasoning  →  Stage 4: Neuro-Symbolic AI
+(Modular routing & flow)      (Pattern & score learning)    (Deterministic rule engine)     (Production synthesis)
+```
+
+---
+
+### 2. Retrieval Evolution (RAG Across 4 Iterations)
+
+The general-module retrieval architecture evolved across four distinct iterations. Each phase resolved the failure modes of the previous design until arriving at the production tool-using agent:
+
+[![RAG Evolution Architecture](screenshots/rag-evolution.png)](docs/rag-evolution.html)
+
+*Interactive comparison available in [docs/rag-evolution.html](docs/rag-evolution.html).*
+
+| Iteration | Architecture | How It Worked | Why We Moved On |
+|---|---|---|---|
+| **1. Archived** | Dense Retrieval + LLM Reranker | Top-50 vector search filtered by a second LLM reranking hop. | Reranker added latency & cost without fixing recall misses (if the answer was not in top-50, reranking could not recover it). |
+| **2. Archived** | Hybrid RAG (BM25 + RRF) | Keyword search with multiple query variants merged via Reciprocal Rank Fusion. | Handled error codes well but missed semantic paraphrasing. Complex rank merges didn't earn their keep once agentic search emerged. |
+| **3. Archived** | Self-RAG (Verifier Loop) | LLM synthesizer drafted an answer; a separate LLM verifier checked grounding and looped back if unsupported. | Guarded against hallucinations but doubled/tripled inference costs. Verifier was acting like a planner *after* retrieval. |
+| **4. Current (Prod)** | **Tool-Using Agent** | Single agent dynamically selects tools (`semantic_search`, `exact_grep`, `read_article`), accumulating 5–60 chunks max before final synthesis. | **Adaptive**: easy tickets need 1 tool call; hard ones grep exact codes and expand. One model in the loop, zero reranking overhead. |
+
+---
+
+### 3. Scaling to a Shared Multi-Department Platform
+
+Once operational stability and safety guardrails were proven on the primary queue, COREX transitioned from an isolated queue tool into an extensible platform. The core engine, reasoning module, and operations console were decoupled so new business departments can onboard with zero cross-tenant leakage:
+
+![CoreX - Shared Multi-Department Platform](screenshots/corex-cross-departments.png)
+
+- **Isolated execution contexts:** Independent tenant databases, encrypted credentials, dedicated servers, and custom domain modules.
+- **Compounding platform improvements:** Upgrades to the core router, guardrail firewalls, confidence calibration, and operator review tooling immediately benefit every connected department.
+
+---
+
 ## Scale
 
 | Metric | Measured Impact |

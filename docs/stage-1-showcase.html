@@ -1,0 +1,2957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCD CORE | Stage-1</title>
+<script>
+  document.documentElement.classList.add('js');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Nunito:wght@800;900&family=Space+Grotesk:wght@500;700&display=swap');
+
+  :root {
+    --ink-950: #08111f;
+    --ink-900: #12263e;
+    --ink-700: #3c6088;
+    --mist-100: #edf4f8;
+    --mist-200: #d7e5ef;
+    --sand-100: #f9f4e9;
+    --lime-300: #b9ef48;
+    --teal-300: #77ddd3;
+    --coral-300: #ff8f79;
+    --white: #ffffff;
+    --shadow-soft: 0 18px 48px rgba(8, 17, 31, 0.08);
+    --shadow-strong: 0 28px 90px rgba(8, 17, 31, 0.16);
+    --radius-lg: 32px;
+    --radius-md: 22px;
+    --radius-sm: 16px;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--ink-900);
+    background:
+      radial-gradient(circle at top left, rgba(119, 221, 211, 0.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(185, 239, 72, 0.16), transparent 24%),
+      linear-gradient(180deg, #f9fbfd 0%, #edf4f8 44%, #fbf7f0 100%);
+    overflow-x: hidden;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  .page-shell {
+    width: min(1380px, calc(100% - 34px));
+    margin: 0 auto;
+  }
+
+  .js .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  .js .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .surface {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    border-radius: 30px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(14px);
+  }
+
+  .hero {
+    padding: 24px 0 64px;
+  }
+
+  .hero-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 44px 28px 32px;
+    border-radius: 38px;
+    text-align: center;
+    color: var(--white);
+    background:
+      radial-gradient(circle at 18% 18%, rgba(185, 239, 72, 0.16), transparent 18%),
+      radial-gradient(circle at 82% 14%, rgba(119, 221, 211, 0.2), transparent 20%),
+      linear-gradient(150deg, var(--ink-950) 0%, #10223b 52%, #183c65 100%);
+    box-shadow: var(--shadow-strong);
+  }
+
+  .hero-panel::before,
+  .hero-panel::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .hero-panel::before {
+    width: 520px;
+    height: 520px;
+    right: -210px;
+    bottom: -300px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .hero-panel::after {
+    width: 260px;
+    height: 260px;
+    left: -100px;
+    top: -80px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 64%);
+  }
+
+  .hero-kicker {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    margin-bottom: 18px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .title-wrap {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 18px;
+  }
+
+  .title-wrap h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    line-height: 0.96;
+  }
+
+  .title-side {
+    display: grid;
+    gap: 2px;
+    align-content: center;
+    text-align: right;
+    width: max-content;
+  }
+
+  .title-scd {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(56px, 6.4vw, 96px);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 0.88;
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  .title-stage {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 72%;
+    margin-left: 8%;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(14px, 1.4vw, 20px);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    line-height: 0.92;
+  }
+
+  .title-stage span {
+    display: block;
+    background: linear-gradient(135deg, #ffd8a8 0%, var(--coral-300) 48%, #ffb6db 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 10px 24px rgba(255, 143, 121, 0.16);
+  }
+
+  .title-core {
+    display: inline-block;
+    font-family: 'Nunito', 'IBM Plex Sans', sans-serif;
+    font-size: clamp(68px, 12vw, 138px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #ffffff 0%, var(--teal-300) 34%, #9ce9ff 64%, var(--lime-300) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 16px 40px rgba(119, 221, 211, 0.12);
+    vertical-align: baseline;
+  }
+
+  .title-core-wrap {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    width: min(840px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 10px;
+    text-wrap: balance;
+  }
+
+  .hero-copy-lead {
+    display: block;
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.12;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .hero-copy-sub {
+    display: block;
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .hero-tags {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    width: min(720px, 100%);
+    margin: 0 auto 18px;
+  }
+
+  .hero-tag,
+  .engine-chip,
+  .detail-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+
+  .hero-tag {
+    position: relative;
+    justify-content: center;
+    min-height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .hero-flow-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 20px;
+    color: rgba(119, 221, 211, 0.82);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    animation: nudgeRight 2s ease-in-out infinite;
+  }
+
+  .modularity-board {
+    position: relative;
+    z-index: 1;
+    margin: 34px auto 0;
+    width: min(920px, 100%);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: 104px 42px minmax(170px, 1fr) 42px 104px;
+    gap: 14px;
+    align-items: center;
+    min-height: 520px;
+  }
+
+  .modularity-board::before,
+  .modularity-board::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .modularity-board::before {
+    width: min(520px, 70%);
+    height: min(340px, 52%);
+    transform: translate(-50%, -50%) rotate(-16deg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    animation: orbitSpin 45s linear infinite;
+  }
+
+  .modularity-board::after {
+    width: min(420px, 56%);
+    height: min(420px, 74%);
+    transform: translate(-50%, -50%) rotate(20deg);
+    border: 1px solid rgba(185, 239, 72, 0.14);
+    animation: orbitSpinReverse 55s linear infinite;
+  }
+
+  .module-node,
+  .core-node {
+    position: relative;
+    z-index: 1;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .module-node {
+    min-height: 108px;
+    padding: 18px 16px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.05));
+    color: var(--white);
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(8, 17, 31, 0.16);
+    backdrop-filter: blur(18px);
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .module-node:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 24px 48px rgba(8, 17, 31, 0.2);
+  }
+
+  .module-node strong,
+  .core-node strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .module-node span,
+  .core-node span {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .module-node.notifications {
+    grid-column: 2 / 5;
+    grid-row: 1;
+    width: min(250px, 100%);
+    justify-self: center;
+    border-radius: 999px;
+  }
+
+  .module-node.general {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    width: min(230px, 100%);
+    justify-self: start;
+    border-radius: 999px;
+  }
+
+  .module-node.spam {
+    grid-column: 4 / 6;
+    grid-row: 3;
+    width: min(230px, 100%);
+    justify-self: end;
+    border-radius: 999px;
+  }
+
+  .module-node.orphaned {
+    grid-column: 2 / 5;
+    grid-row: 5;
+    width: min(270px, 100%);
+    justify-self: center;
+    border-radius: 999px;
+  }
+
+  .module-node.ringcentral {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    width: min(230px, 100%);
+    justify-self: start;
+    border-radius: 999px;
+  }
+
+  .core-node {
+    grid-column: 3;
+    grid-row: 3;
+    width: 214px;
+    min-height: 214px;
+    padding: 30px 22px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(185, 239, 72, 0.2), rgba(119, 221, 211, 0.18));
+    box-shadow: 0 18px 42px rgba(8, 17, 31, 0.18);
+    overflow: hidden;
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+
+  .core-node::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+    animation: ringPulse 4s ease-in-out infinite;
+  }
+
+  .core-node strong {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .core-node span {
+    max-width: 140px;
+    margin: 0 auto;
+  }
+
+  main section {
+    padding: 82px 0 0;
+  }
+
+  .section-head {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .section-kicker {
+    display: inline-flex;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-700);
+  }
+
+  .section-head h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 10px;
+    color: var(--ink-950);
+  }
+
+  .section-head p {
+    width: min(680px, 100%);
+    margin: 0 auto;
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(18, 38, 62, 0.74);
+  }
+
+  .core-structure-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at top left, rgba(119, 221, 211, 0.12), transparent 22%),
+      radial-gradient(circle at bottom right, rgba(185, 239, 72, 0.12), transparent 22%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(236, 244, 248, 0.94));
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    box-shadow: 0 22px 52px rgba(8, 17, 31, 0.08);
+  }
+
+  .core-structure-panel::before {
+    content: '';
+    position: absolute;
+    inset: 24px;
+    border-radius: 28px;
+    border: 1px dashed rgba(18, 38, 62, 0.08);
+    pointer-events: none;
+  }
+
+  .structure-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 22px;
+  }
+
+  .structure-controller {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+  }
+
+  .structure-controller::after {
+    content: '';
+    width: 2px;
+    height: 34px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(18, 38, 62, 0.22), rgba(18, 38, 62, 0.04));
+  }
+
+  .controller-card {
+    width: min(840px, 100%);
+    padding: 28px 30px;
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), transparent 26%),
+      linear-gradient(145deg, rgba(7, 16, 29, 0.98), rgba(16, 43, 74, 0.96));
+    color: var(--white);
+    box-shadow: 0 30px 72px rgba(8, 17, 31, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    text-align: center;
+  }
+
+  .controller-kicker {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 12px;
+    margin-bottom: 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .controller-card h3 {
+    font-size: clamp(36px, 4.2vw, 50px);
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .controller-card p {
+    width: min(420px, 100%);
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .controller-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .controller-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .structure-line-wrap {
+    position: relative;
+    padding: 18px 8px 4px;
+  }
+
+  .structure-line-wrap::before {
+    content: '';
+    position: absolute;
+    left: 72px;
+    right: 72px;
+    top: 88px;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(18, 38, 62, 0.16), rgba(18, 38, 62, 0.04));
+    pointer-events: none;
+  }
+
+  .structure-line {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+
+  .structure-node {
+    position: relative;
+    min-height: 176px;
+    padding: 12px 10px 14px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.22s ease;
+  }
+
+  .structure-node::before {
+    display: none;
+  }
+
+  .structure-node[data-structure="executer"] .structure-icon {
+    background: linear-gradient(135deg, rgba(255, 143, 121, 0.2), rgba(119, 221, 211, 0.18));
+  }
+  .structure-node[data-structure="gatekeeper"] .structure-icon {
+    background: linear-gradient(135deg, rgba(119, 221, 211, 0.22), rgba(186, 230, 126, 0.18));
+  }
+  .structure-node[data-structure="human"] .structure-icon {
+    background: linear-gradient(135deg, rgba(186, 230, 126, 0.22), rgba(255, 143, 121, 0.16));
+  }
+  .structure-node[data-structure="scanner"] .structure-icon {
+    background: linear-gradient(135deg, rgba(119, 221, 211, 0.22), rgba(119, 170, 255, 0.18));
+  }
+
+  .structure-node:last-child::before {
+    display: none;
+  }
+
+  .structure-node-shell {
+    display: grid;
+    align-content: start;
+    justify-items: stretch;
+    gap: 10px;
+    min-height: 144px;
+    padding: 14px;
+    border-radius: 24px;
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: 0 10px 24px rgba(18, 38, 62, 0.04);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  }
+
+  .structure-node:hover,
+  .structure-node:focus-visible,
+  .structure-node.active {
+    transform: translateY(-4px);
+  }
+
+  .structure-node:hover .structure-node-shell,
+  .structure-node:focus-visible .structure-node-shell,
+  .structure-node.active .structure-node-shell {
+    box-shadow: 0 18px 34px rgba(18, 38, 62, 0.08);
+    border-color: rgba(18, 38, 62, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(246, 250, 252, 0.98));
+  }
+
+  .structure-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(119, 221, 211, 0.22), rgba(185, 239, 72, 0.22));
+    color: var(--ink-950);
+    box-shadow: inset 0 0 0 1px rgba(18, 38, 62, 0.06);
+    flex: 0 0 auto;
+  }
+
+  .structure-node-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .structure-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .structure-node strong {
+    display: block;
+    font-size: 15px;
+    line-height: 1.18;
+    color: var(--ink-950);
+  }
+
+  .structure-copy {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(18, 38, 62, 0.72);
+  }
+
+  .structure-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-width: 44px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(18, 38, 62, 0.08);
+    color: rgba(18, 38, 62, 0.74);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .rag-shell {
+    position: relative;
+    z-index: 1;
+  }
+
+  .rag-bubble {
+    width: min(760px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 8px;
+    padding: 22px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 24%),
+      linear-gradient(145deg, rgba(8, 17, 31, 0.98), rgba(18, 38, 62, 0.96));
+    box-shadow: 0 28px 64px rgba(8, 17, 31, 0.2);
+    color: var(--white);
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+
+  .rag-bubble:hover,
+  .rag-bubble:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 34px 72px rgba(8, 17, 31, 0.24);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .rag-bubble-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .rag-bubble-kicker {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .rag-bubble-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 22px;
+    font-weight: 500;
+    flex: 0 0 auto;
+    transition: transform 0.22s ease;
+  }
+
+  .rag-bubble[aria-expanded="true"] .rag-bubble-toggle {
+    transform: rotate(45deg);
+  }
+
+  .rag-bubble h3 {
+    font-size: clamp(26px, 3.1vw, 34px);
+    line-height: 1.12;
+    color: var(--white);
+  }
+
+  .rag-bubble p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .rag-panel {
+    width: min(760px, 100%);
+    margin: 12px auto 0;
+    padding: 18px 20px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 246, 250, 0.94));
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    box-shadow: 0 18px 40px rgba(8, 17, 31, 0.08);
+  }
+
+  .rag-panel[hidden] {
+    display: none;
+  }
+
+  .rag-panel-copy {
+    font-size: 14px;
+    line-height: 1.62;
+    color: rgba(18, 38, 62, 0.74);
+  }
+
+  .rag-panel-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .rag-panel-point {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(18, 38, 62, 0.06);
+    color: rgba(18, 38, 62, 0.72);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .structure-detail {
+    position: relative;
+    z-index: 1;
+    padding: 24px;
+    border-radius: 26px;
+    background: linear-gradient(145deg, rgba(8, 17, 31, 0.96), rgba(18, 38, 62, 0.94));
+    color: var(--white);
+  }
+
+  .structure-detail h3 {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+
+  .structure-detail p {
+    font-size: 15px;
+    line-height: 1.74;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .structure-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .structure-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 12px;
+  }
+
+  .support-notes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .support-note {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    background: rgba(18, 38, 62, 0.04);
+    font-size: 12px;
+    color: rgba(18, 38, 62, 0.64);
+  }
+
+  .stages-shell {
+    position: relative;
+    overflow: hidden;
+    padding: 34px;
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at top right, rgba(119, 221, 211, 0.14), transparent 24%),
+      radial-gradient(circle at bottom left, rgba(255, 143, 121, 0.12), transparent 24%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(233, 242, 247, 0.98));
+    border: 1px solid rgba(18, 38, 62, 0.08);
+    box-shadow: 0 24px 54px rgba(8, 17, 31, 0.08);
+  }
+
+  .stages-shell .section-head h2 {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 25%, #7b2ff7 50%, #ff2d55 75%, #00c6ff 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ── Page-wide animations ── */
+
+  @keyframes orbitSpin {
+    0% { transform: translate(-50%, -50%) rotate(-16deg); }
+    100% { transform: translate(-50%, -50%) rotate(344deg); }
+  }
+
+  @keyframes orbitSpinReverse {
+    0% { transform: translate(-50%, -50%) rotate(20deg); }
+    100% { transform: translate(-50%, -50%) rotate(-340deg); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 18px 42px rgba(8, 17, 31, 0.18), 0 0 0 rgba(185, 239, 72, 0); }
+    50% { box-shadow: 0 18px 42px rgba(8, 17, 31, 0.18), 0 0 30px rgba(185, 239, 72, 0.15); }
+  }
+
+  @keyframes floatY {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-6px); }
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.06); }
+  }
+
+  @keyframes ringPulseOuter {
+    0%, 100% { opacity: 0.25; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(1.08); }
+  }
+
+  @keyframes dashFlow {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -21; }
+  }
+
+  @keyframes nudgeRight {
+    0%, 100% { transform: translateX(0); opacity: 0.7; }
+    50% { transform: translateX(4px); opacity: 1; }
+  }
+
+  @keyframes subtleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  .stages-shell::before,
+  .stages-shell::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .stages-shell::before {
+    width: 280px;
+    height: 280px;
+    top: -140px;
+    right: -120px;
+    border: 1px solid rgba(18, 38, 62, 0.05);
+  }
+
+  .stages-shell::after {
+    width: 180px;
+    height: 180px;
+    bottom: -90px;
+    left: -60px;
+    background: radial-gradient(circle, rgba(185, 239, 72, 0.18), transparent 70%);
+  }
+
+  .stage-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .stage-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 198px;
+    padding: 18px;
+    border: 1px solid rgba(18, 38, 62, 0.1);
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 246, 250, 0.92));
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+  }
+
+  .stage-card::after {
+    content: '';
+    position: absolute;
+    inset: auto 18px 0;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--stage-accent, var(--teal-300)), transparent);
+    opacity: 0.86;
+  }
+
+  .stage-card[data-stage="stage1"] { --stage-accent: var(--teal-300); }
+  .stage-card[data-stage="stage2"] { --stage-accent: #7db8ff; }
+  .stage-card[data-stage="stage3"] { --stage-accent: var(--lime-300); }
+  .stage-card[data-stage="stage4"] { --stage-accent: var(--coral-300); }
+
+  /* ── Stage 1: Cognitive Engine — neural pulse rings ── */
+  .stage-card[data-stage="stage1"]::before {
+    content: '';
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(119, 221, 211, 0.18);
+    box-shadow:
+      0 0 0 14px rgba(119, 221, 211, 0.06),
+      0 0 0 28px rgba(119, 221, 211, 0.035),
+      0 0 0 42px rgba(119, 221, 211, 0.015),
+      0 0 20px rgba(119, 221, 211, 0.075);
+    animation: neuralPulse 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes neuralPulse {
+    0%, 100% {
+      transform: scale(0.85);
+      opacity: 0.25;
+      box-shadow:
+        0 0 0 14px rgba(119, 221, 211, 0.06),
+        0 0 0 28px rgba(119, 221, 211, 0.035),
+        0 0 0 42px rgba(119, 221, 211, 0.015),
+        0 0 20px rgba(119, 221, 211, 0.075);
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 0.5;
+      box-shadow:
+        0 0 0 14px rgba(119, 221, 211, 0.11),
+        0 0 0 28px rgba(119, 221, 211, 0.07),
+        0 0 0 42px rgba(119, 221, 211, 0.035),
+        0 0 30px rgba(119, 221, 211, 0.15);
+    }
+  }
+
+  /* ── Stage 2: Machine Learning — orbiting data particles ── */
+  .stage-card[data-stage="stage2"]::before {
+    content: '';
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px dashed rgba(125, 184, 255, 0.2);
+    box-shadow: 0 0 16px rgba(125, 184, 255, 0.06);
+    animation: mlOrbit 6s linear infinite;
+    pointer-events: none;
+  }
+
+  .stage-card[data-stage="stage2"] .stage-card-top::after {
+    content: '';
+    position: absolute;
+    right: 44px;
+    bottom: 44px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(125, 184, 255, 0.45), rgba(125, 184, 255, 0.1));
+    box-shadow: 0 0 14px rgba(125, 184, 255, 0.3), 0 0 28px rgba(125, 184, 255, 0.1);
+    animation: mlParticle 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes mlOrbit {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes mlParticle {
+    0% { transform: translate(50px, 0) scale(1); opacity: 0.5; }
+    25% { transform: translate(0, -50px) scale(1.4); opacity: 0.5; }
+    50% { transform: translate(-50px, 0) scale(1); opacity: 0.35; }
+    75% { transform: translate(0, 50px) scale(0.8); opacity: 0.5; }
+    100% { transform: translate(50px, 0) scale(1); opacity: 0.5; }
+  }
+
+  /* ── Stage 3: Symbolic Reasoning — horizontal scan lines ── */
+  .stage-card[data-stage="stage3"]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 18px,
+        rgba(185, 239, 72, 0.12) 18px,
+        rgba(185, 239, 72, 0.12) 19px
+      );
+    animation: scanLinesMove 4s ease-in-out infinite;
+    pointer-events: none;
+    border-radius: 24px;
+    mask-image: linear-gradient(to right, transparent 5%, black 30%, black 70%, transparent 95%);
+    -webkit-mask-image: linear-gradient(to right, transparent 5%, black 30%, black 70%, transparent 95%);
+  }
+
+  .stage-card[data-stage="stage3"] .stage-card-top::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(185, 239, 72, 0.5), transparent);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(185, 239, 72, 0.3);
+    animation: scanBeam 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scanLinesMove {
+    0%, 100% { background-position: 0 0; }
+    50% { background-position: 0 9px; }
+  }
+
+  @keyframes scanBeam {
+    0% { top: 15%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 85%; opacity: 0; }
+  }
+
+  /* ── Stage 4: Neuro-Symbolic AI — singularity convergence ── */
+  .stage-card[data-stage="stage4"]::before {
+    content: '';
+    position: absolute;
+    right: 16px;
+    bottom: 30px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 143, 121, 0.3);
+    animation: endgameRing1 6s linear infinite;
+    pointer-events: none;
+    box-shadow: 0 0 14px rgba(255, 143, 121, 0.12);
+  }
+
+  .stage-card[data-stage="stage4"] .stage-card-top::before {
+    content: '';
+    position: absolute;
+    right: 30px;
+    bottom: 44px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(125, 184, 255, 0.35);
+    animation: endgameRing2 4s linear infinite reverse;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(125, 184, 255, 0.1);
+  }
+
+  .stage-card[data-stage="stage4"] .stage-card-top::after {
+    content: '';
+    position: absolute;
+    right: 46px;
+    bottom: 60px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(185, 239, 72, 0.35);
+    animation: endgameRing3 3s linear infinite;
+    pointer-events: none;
+    box-shadow: 0 0 8px rgba(185, 239, 72, 0.1);
+  }
+
+  @keyframes endgameRing1 {
+    0% { transform: rotate(0deg) rotateX(70deg); }
+    100% { transform: rotate(360deg) rotateX(70deg); }
+  }
+
+  @keyframes endgameRing2 {
+    0% { transform: rotate(0deg) rotateY(70deg); }
+    100% { transform: rotate(360deg) rotateY(70deg); }
+  }
+
+  @keyframes endgameRing3 {
+    0% { transform: rotate(0deg) rotateX(45deg) rotateZ(45deg); }
+    100% { transform: rotate(360deg) rotateX(45deg) rotateZ(45deg); }
+  }
+
+  .stage-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .stage-card:hover,
+  .stage-card:focus-visible,
+  .stage-card.active {
+    transform: translateY(-4px);
+    border-color: rgba(18, 38, 62, 0.18);
+    box-shadow: 0 18px 40px rgba(18, 38, 62, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(246, 250, 252, 0.96));
+  }
+
+  .stage-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--stage-accent, var(--mist-100)) 18%, white);
+    font-weight: 700;
+    color: var(--ink-950);
+  }
+
+  .stage-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--stage-accent, var(--mist-100)) 18%, white);
+    color: color-mix(in srgb, var(--stage-accent, var(--ink-900)) 76%, var(--ink-950));
+  }
+
+  .stage-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .stage-card h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: var(--ink-950);
+  }
+
+  .stage-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(18, 38, 62, 0.54);
+  }
+
+  .stage-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(18, 38, 62, 0.72);
+  }
+
+  .stage-detail-panel {
+    position: relative;
+    z-index: 1;
+    margin-top: 18px;
+    padding: 24px;
+    border-radius: 26px;
+    background: linear-gradient(145deg, rgba(8, 17, 31, 0.96), rgba(18, 38, 62, 0.94));
+    color: var(--white);
+  }
+
+  .stage-detail-panel h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--white);
+  }
+
+  .stage-detail-panel p {
+    font-size: 15px;
+    line-height: 1.72;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .engine-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: 18px;
+  }
+
+  .engine-chip {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .modules-panel {
+    padding: 28px;
+  }
+
+  .module-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .module-tabs button {
+    border: 0;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: rgba(18, 38, 62, 0.06);
+    color: var(--ink-700);
+    cursor: pointer;
+    transition: transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+  }
+
+  .module-tabs button:hover,
+  .module-tabs button:focus-visible,
+  .module-tabs button.active {
+    transform: translateY(-2px);
+    color: var(--white);
+    background: linear-gradient(135deg, var(--ink-900), var(--ink-700));
+  }
+
+  .module-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 18px;
+  }
+
+  .module-card,
+  .module-copy {
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(18, 38, 62, 0.08);
+  }
+
+  .module-card {
+    background: linear-gradient(160deg, rgba(18, 38, 62, 0.96), rgba(25, 61, 102, 0.92));
+    color: var(--white);
+  }
+
+  .module-card h3 {
+    font-size: 34px;
+    margin-bottom: 10px;
+  }
+
+  .module-card p {
+    font-size: 14px;
+    line-height: 1.68;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .module-points {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .module-point {
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .module-point strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .module-point span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .module-copy {
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .module-copy h4 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--ink-950);
+  }
+
+  .module-copy p {
+    font-size: 14px;
+    line-height: 1.72;
+    color: rgba(18, 38, 62, 0.76);
+  }
+
+  .module-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .module-list li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(18, 38, 62, 0.76);
+  }
+
+  .module-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--coral-300), var(--teal-300));
+  }
+
+  .deployment-shell {
+    position: relative;
+    overflow: visible;
+    padding: 12px 22px 6px;
+    border-radius: 28px;
+    background: linear-gradient(160deg, rgba(12, 22, 36, 0.99), rgba(20, 34, 54, 0.98));
+    border: 1px solid rgba(255, 153, 0, 0.12);
+    box-shadow: 0 12px 28px rgba(8, 17, 31, 0.22);
+    color: var(--white);
+  }
+
+  .deployment-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 28px;
+    background: repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      transparent 0deg 8deg,
+      rgba(255, 153, 0, 0.028) 8deg 10deg,
+      transparent 10deg 20deg
+    );
+    mask-image: radial-gradient(ellipse 100% 90% at 50% 50%, black 5%, transparent 55%);
+    -webkit-mask-image: radial-gradient(ellipse 100% 90% at 50% 50%, black 5%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .deployment-frame {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .deployment-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
+  .deployment-brand {
+    display: none;
+  }
+
+  .deployment-brand::after {
+    display: none;
+  }
+
+  .deployment-brand .section-kicker {
+    display: none;
+  }
+
+  .deployment-heading {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .deployment-heading h2 {
+    font-size: clamp(18px, 2.4vw, 24px);
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .deployment-heading .aws-lockup {
+    margin-top: 0;
+    align-items: center;
+  }
+
+  .aws-lockup {
+    position: relative;
+    z-index: 1;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .amazon-word {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(18px, 2.4vw, 22px);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    text-transform: lowercase;
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .aws-word {
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ffd08a;
+  }
+
+  .aws-smile {
+    width: 90px;
+    height: 16px;
+    margin-top: 2px;
+    overflow: visible;
+  }
+
+  .aws-smile path {
+    fill: none;
+    stroke: #ff9900;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .deployment-brand p {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+    max-width: 28ch;
+    font-size: 9px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .deployment-summary {
+    position: relative;
+    overflow: visible;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .deployment-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .deployment-summary::before {
+    display: none;
+  }
+
+  .deployment-summary-top {
+    display: none;
+  }
+
+  .deployment-summary-kicker {
+    display: none;
+  }
+
+  .deployment-summary-badge {
+    display: none;
+  }
+
+  .deployment-summary-badge svg {
+    display: none;
+  }
+
+  .deployment-summary h2 {
+    display: none;
+  }
+
+  .deployment-summary p {
+    margin: 0;
+    max-width: none;
+    font-size: 10px;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.50);
+    text-align: left;
+  }
+
+  .aws-benefits {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .aws-benefit {
+    display: inline-flex;
+    align-items: center;
+    min-height: 18px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgba(255, 153, 0, 0.10);
+    border: 1px solid rgba(255, 153, 0, 0.18);
+    color: #ffd08a;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .aws-graphic {
+    position: relative;
+    height: 100px;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .aws-graphic::before {
+    display: none;
+  }
+
+  .aws-graphic::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 38% 38% at 50% 42%, rgba(255, 153, 0, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .aws-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .aws-lines path {
+    fill: none;
+    stroke: rgba(255, 153, 0, 0.22);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-dasharray: 2 5;
+    animation: dashFlow 3s linear infinite;
+  }
+
+  .aws-cloud {
+    position: absolute;
+    left: 50%;
+    top: 26%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 96px;
+    animation: floatY 5s ease-in-out infinite;
+    height: 76px;
+    padding: 8px 6px 6px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 42% 38%, rgba(255, 210, 120, 0.22), rgba(255, 153, 0, 0.10) 55%, rgba(255, 153, 0, 0.04));
+    border: 1px solid rgba(255, 153, 0, 0.30);
+    box-shadow:
+      0 0 36px rgba(255, 153, 0, 0.14),
+      0 0 70px rgba(255, 153, 0, 0.06),
+      0 6px 14px rgba(8, 17, 31, 0.16);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--white);
+  }
+
+  .aws-cloud::before,
+  .aws-cloud::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 153, 0, 0.10);
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .aws-cloud::before {
+    inset: -14px;
+    opacity: 0.5;
+    animation: ringPulse 4s ease-in-out infinite;
+  }
+
+  .aws-cloud::after {
+    inset: -30px;
+    opacity: 0.25;
+    animation: ringPulseOuter 5s ease-in-out infinite 0.5s;
+  }
+
+  .aws-cloud-icon {
+    width: 18px;
+    height: 18px;
+    margin-bottom: 2px;
+  }
+
+  .aws-cloud-icon path {
+    fill: none;
+    stroke: #ff9900;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .aws-cloud small {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #ffd08a;
+  }
+
+  .aws-cloud strong {
+    display: block;
+    font-size: 9px;
+    line-height: 1.06;
+  }
+
+  .aws-service {
+    position: absolute;
+    z-index: 2;
+    padding: 3px 10px 3px 4px;
+    border-radius: 999px;
+    animation: subtleFloat 4s ease-in-out infinite;
+    border: 1px solid rgba(255, 153, 0, 0.16);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 153, 0, 0.06));
+    box-shadow: 0 2px 8px rgba(8, 17, 31, 0.12);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .aws-service.highlight {
+    background: linear-gradient(135deg, rgba(255, 240, 210, 0.18), rgba(255, 153, 0, 0.12));
+    border-color: rgba(255, 153, 0, 0.32);
+    box-shadow: 0 3px 12px rgba(255, 153, 0, 0.14);
+  }
+
+  .service-icon-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 153, 0, 0.28);
+    background: radial-gradient(circle at 40% 35%, rgba(255, 210, 140, 0.30), rgba(255, 153, 0, 0.14));
+    box-shadow: 0 2px 4px rgba(255, 153, 0, 0.08);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .service-icon-box svg {
+    width: 10px;
+    height: 10px;
+    fill: none;
+    stroke: #ffd08a;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .service-copy {
+    min-width: 0;
+  }
+
+  .service-copy strong {
+    display: block;
+    font-size: 7px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .service-copy span {
+    display: none;
+  }
+
+  /* upper arc */
+  .service-bedrock     { left: 3%;    top: 6%;  animation-delay: 0s; }
+  .service-eventbridge { left: 25%;   top: 0%;  animation-delay: 0.5s; }
+  .service-lambda      { left: 50%;   bottom: -4px; transform: translateX(-50%); animation-delay: 1s; }
+  .service-api         { right: 3%;   top: 6%;  animation-delay: 1.5s; }
+
+  /* lower arc */
+  .service-s3          { left: 3%;    bottom: 6%; animation-delay: 0.3s; }
+  .service-iam         { left: 25%;   bottom: 0%; animation-delay: 0.8s; }
+  .service-sqs         { right: 25%;  bottom: 0%; animation-delay: 1.3s; }
+  .service-watch       { right: 3%;   bottom: 6%; animation-delay: 1.8s; }
+
+  /* bottom anchor */
+  .service-trail       { right: 25%;  top: 0%; animation-delay: 0.7s; }
+
+  .footer {
+    padding: 84px 0 40px;
+  }
+
+  .footer-panel {
+    padding: 26px 24px;
+    border-radius: 28px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(8, 17, 31, 0.97), rgba(18, 38, 62, 0.96));
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .footer-mark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .footer-scd {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .footer-core {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--teal-300), #a1ecff 56%, var(--lime-300));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .footer-motto,
+  .footer-subline {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .footer-motto {
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .footer-subline {
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .footer-points {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .footer-point {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 1100px) {
+    .controller-card {
+      width: 100%;
+    }
+
+    .structure-line {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .stage-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rag-grid,
+    .module-detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .deployment-top {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 820px) {
+    .structure-line {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .structure-node::before {
+      display: none;
+    }
+
+    .structure-line-wrap::before {
+      left: 48px;
+      right: 48px;
+    }
+
+    .modularity-board {
+      min-height: 460px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: 96px 18px minmax(150px, 1fr) 18px 96px;
+    }
+
+    .module-node.notifications,
+    .module-node.orphaned {
+      grid-column: 2;
+      width: 100%;
+    }
+
+    .module-node.general {
+      grid-column: 1;
+      grid-row: 3;
+      width: 100%;
+    }
+
+    .module-node.spam {
+      grid-column: 3;
+      grid-row: 3;
+      width: 100%;
+    }
+
+    .module-node.ringcentral {
+      grid-column: 1;
+      grid-row: 2;
+      width: 100%;
+    }
+
+    .core-node {
+      width: min(188px, 100%);
+      min-height: 188px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hero {
+      padding: 18px 0 56px;
+    }
+
+    .hero-panel,
+    .core-structure-panel,
+    .rag-shell,
+    .modules-panel,
+    .deployment-shell,
+    .stage-detail-panel {
+      padding: 22px;
+    }
+
+    .deployment-brand,
+    .deployment-summary {
+      padding: 0;
+    }
+
+    .deployment-top {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .aws-graphic {
+      aspect-ratio: auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        'cloud cloud'
+        'bedrock lambda'
+        'eventbridge api'
+        'sqs iam'
+        's3 watch'
+        'trail trail';
+      gap: 6px;
+      padding: 10px;
+    }
+
+    .aws-graphic::before,
+    .aws-graphic::after {
+      display: none;
+    }
+
+    .aws-lines {
+      display: none;
+    }
+
+    .aws-cloud {
+      position: static;
+      transform: none;
+      width: 100%;
+      height: auto;
+      min-height: 80px;
+      margin-bottom: 4px;
+      border-radius: 20px;
+      grid-area: cloud;
+    }
+
+    .aws-cloud::before,
+    .aws-cloud::after {
+      display: none;
+    }
+
+    .aws-service {
+      position: static;
+      width: auto;
+      min-height: auto;
+      gap: 6px;
+      padding: 6px 14px 6px 6px;
+      white-space: normal;
+      transform: none !important;
+    }
+
+    .service-copy span {
+      display: none;
+    }
+
+    .service-bedrock     { grid-area: bedrock; }
+    .service-eventbridge { grid-area: eventbridge; }
+    .service-lambda      { grid-area: lambda; }
+    .service-api         { grid-area: api; }
+    .service-s3          { grid-area: s3; }
+    .service-iam         { grid-area: iam; }
+    .service-sqs         { grid-area: sqs; }
+    .service-watch       { grid-area: watch; }
+    .service-trail       { grid-area: trail; }
+
+    .service-icon-box {
+      width: 24px;
+      height: 24px;
+    }
+
+    .stage-grid,
+    .structure-line {
+      grid-template-columns: 1fr;
+    }
+
+    .modularity-board {
+      min-height: 390px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: 84px 12px minmax(132px, 1fr) 12px 84px;
+      gap: 10px;
+    }
+
+    .module-node {
+      min-height: 84px;
+      padding: 14px 10px;
+    }
+
+    .module-node strong,
+    .core-node strong {
+      font-size: 16px;
+    }
+
+    .structure-line-wrap::before {
+      display: none;
+    }
+
+    .structure-node {
+      min-height: 0;
+      padding: 0;
+    }
+
+    .structure-node-shell {
+      min-height: 0;
+    }
+
+    .structure-node-head {
+      gap: 12px;
+    }
+
+    .structure-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+    }
+
+    .structure-node strong {
+      font-size: 16px;
+    }
+
+    .controller-card {
+      padding: 22px;
+      border-radius: 28px;
+    }
+
+    .controller-card h3 {
+      font-size: 30px;
+    }
+
+    .controller-card p {
+      font-size: 16px;
+    }
+
+    .rag-bubble {
+      padding: 20px;
+      border-radius: 28px;
+    }
+
+    .rag-bubble h3 {
+      font-size: 24px;
+    }
+
+    .module-node span,
+    .core-node span {
+      font-size: 11px;
+    }
+
+    .core-node {
+      width: min(150px, 100%);
+      min-height: 150px;
+      padding: 20px 14px;
+    }
+
+    .hero-tags {
+      flex-direction: column;
+      gap: 14px;
+      width: min(220px, 100%);
+    }
+
+    .hero-tag {
+      letter-spacing: 0.06em;
+    }
+
+    .hero-flow-arrow {
+      font-size: 14px;
+      transform: rotate(90deg);
+    }
+
+    .title-wrap {
+      display: block;
+    }
+
+    .title-wrap h1 {
+      white-space: normal;
+    }
+
+    .title-side {
+      text-align: center;
+      gap: 4px;
+    }
+
+    .title-scd {
+      font-size: clamp(40px, 12vw, 52px);
+    }
+
+    .title-stage {
+      font-size: clamp(11px, 3.2vw, 14px);
+    }
+
+    .title-core {
+      display: block;
+      font-size: clamp(54px, 18vw, 84px);
+    }
+
+    .stages-shell {
+      padding: 22px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-panel fade-up">
+        <div class="hero-tags">
+          <span class="hero-tag">Support queue</span>
+          <span class="hero-flow-arrow" aria-hidden="true">&rarr;</span>
+          <span class="hero-tag">Other departments</span>
+          <span class="hero-flow-arrow" aria-hidden="true">&rarr;</span>
+          <span class="hero-tag">Other companies</span>
+        </div>
+        <div class="title-wrap">
+          <h1><span class="title-side"><span class="title-scd">SCD</span><span class="title-stage" aria-label="Stage-1"><span>S</span><span>T</span><span>A</span><span>G</span><span>E</span><span>-</span><span>1</span></span></span><span class="title-core-wrap"><span class="title-core">CORE</span></span></h1>
+        </div>
+        <p class="hero-copy">
+          <span class="hero-copy-lead">One core. Swappable specialities. Built to expand cleanly.</span>
+          <span class="hero-copy-sub">A modular operating system for support queues, other departments, and other companies.</span>
+        </p>
+
+        <div class="modularity-board" aria-label="Module map">
+          <article class="module-node notifications">
+            <strong>Notifications</strong>
+            <span>Target one class of work.</span>
+          </article>
+          <article class="module-node general">
+            <strong>General</strong>
+            <span>Catch broader requests cleanly.</span>
+          </article>
+          <div class="core-node">
+            <strong>Route by module</strong>
+            <span>Add, swap, or refine capabilities without changing the core idea.</span>
+          </div>
+          <article class="module-node spam">
+            <strong>Spam</strong>
+            <span>Keep noise in its own lane.</span>
+          </article>
+          <article class="module-node orphaned">
+            <strong>Orphaned</strong>
+            <span>Turn a deep workflow into a module.</span>
+          </article>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="core-structure">
+        <div class="section-head fade-up">
+          <div class="section-kicker">Core Structure</div>
+          <h2>How the core moves</h2>
+          <p>Hover a step to see the actual process path.</p>
+        </div>
+
+        <div class="core-structure-panel fade-up">
+          <div class="structure-grid">
+            <div class="rag-shell">
+              <button class="rag-bubble" id="rag-toggle" type="button" aria-expanded="false" aria-controls="rag-panel">
+                <div class="rag-bubble-top">
+                  <span class="rag-bubble-kicker">Powered by a RAG architecture</span>
+                  <span class="rag-bubble-toggle" aria-hidden="true">+</span>
+                </div>
+                <h3>Built on Retrieval-Augmented Generation pipelines</h3>
+                <p>Best accuracy starts with retrieval.</p>
+              </button>
+
+              <div class="rag-panel" id="rag-panel" hidden>
+                <p class="rag-panel-copy">Retrieve first. Reason second. That is what grounds broad support work before the core acts.</p>
+                <div class="rag-panel-points">
+                  <span class="rag-panel-point">Closed tickets</span>
+                  <span class="rag-panel-point">KB articles</span>
+                  <span class="rag-panel-point">Support patterns</span>
+                  <span class="rag-panel-point">Best accuracy</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="structure-controller" aria-hidden="true">
+              <div class="controller-card">
+                <div class="controller-kicker">Control Layer</div>
+                <h3>Orchestrator</h3>
+                <p>Directs the full flow.</p>
+                <div class="controller-chips">
+                  <span class="controller-chip">Fast</span>
+                  <span class="controller-chip">Precise</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="structure-line-wrap">
+              <div class="structure-line" role="tablist" aria-label="Core structure">
+              <button class="structure-node scanner active" type="button" data-structure="scanner" aria-selected="true">
+                <div class="structure-node-shell">
+                  <span class="structure-step">01</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><line x1="7" y1="12" x2="17" y2="12"></line></svg>
+                    </span>
+                    <strong>Scanner</strong>
+                  </div>
+                  <span class="structure-copy">Scan the queue for new tickets.</span>
+                </div>
+              </button>
+              <button class="structure-node fetcher" type="button" data-structure="fetcher" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">02</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 4v10"></path><path d="M8 10l4 4 4-4"></path><path d="M4 18h16"></path></svg>
+                    </span>
+                    <strong>Fetcher</strong>
+                  </div>
+                  <span class="structure-copy">Pull the full ticket context.</span>
+                </div>
+              </button>
+              <button class="structure-node router" type="button" data-structure="router" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">03</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M5 6h6"></path><path d="M11 6l3 3"></path><path d="M14 9h5"></path><path d="M11 6v12"></path><path d="M11 18l3-3"></path><path d="M14 15h5"></path></svg>
+                    </span>
+                    <strong>Router</strong>
+                  </div>
+                  <span class="structure-copy">Pick the best module quickly.</span>
+                </div>
+              </button>
+              <button class="structure-node modules" type="button" data-structure="modules" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">04</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><rect x="4" y="5" width="7" height="7" rx="1.5"></rect><rect x="13" y="5" width="7" height="7" rx="1.5"></rect><rect x="8.5" y="13" width="7" height="7" rx="1.5"></rect></svg>
+                    </span>
+                    <strong>Module</strong>
+                  </div>
+                  <span class="structure-copy">Brain 1 — run matched module logic.</span>
+                </div>
+              </button>
+              <button class="structure-node gatekeeper" type="button" data-structure="gatekeeper" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">05</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 2L4 7v5c0 5.25 3.4 10.74 8 12 4.6-1.26 8-6.75 8-12V7l-8-5z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                    </span>
+                    <strong>Gatekeeper</strong>
+                  </div>
+                  <span class="structure-copy">Brain 2 — strict hard-code gate.</span>
+                </div>
+              </button>
+              <button class="structure-node human" type="button" data-structure="human" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">06</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path></svg>
+                    </span>
+                    <strong>Human</strong>
+                  </div>
+                  <span class="structure-copy">Brain 3 — GPT or Human review when needed.</span>
+                </div>
+              </button>
+              <button class="structure-node executer" type="button" data-structure="executer" aria-selected="false">
+                <div class="structure-node-shell">
+                  <span class="structure-step">07</span>
+                  <div class="structure-node-head">
+                    <span class="structure-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M6 12h6"></path><path d="M12 8l4 4-4 4"></path><path d="M4 6h2"></path><path d="M4 18h2"></path><path d="M18 6h2"></path><path d="M18 18h2"></path></svg>
+                    </span>
+                    <strong>Executer</strong>
+                  </div>
+                  <span class="structure-copy">Updates and resolves the ticket.</span>
+                </div>
+              </button>
+            </div>
+            </div>
+
+            <div class="structure-detail">
+              <h3 id="structure-title">Scanner</h3>
+              <p id="structure-copy">The scanner watches the Jira queue continuously for new and updated tickets. It is the eyes of the system, making sure nothing sits unnoticed.</p>
+              <div class="structure-tags" id="structure-tags"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="modules">
+        <div class="section-head fade-up">
+          <div class="section-kicker">Modules</div>
+          <h2>Open a module</h2>
+          <p>The core stays reusable because the modules stay separate.</p>
+          <div class="support-notes">
+            <span class="support-note">Auto queue scan</span>
+            <span class="support-note">Manual ticket id</span>
+            <span class="support-note">Outage burst detection</span>
+          </div>
+        </div>
+
+        <div class="surface modules-panel fade-up">
+          <div class="module-tabs" role="tablist" aria-label="Module tabs">
+            <button class="active" type="button" data-module="notifications" aria-selected="true">Notifications</button>
+            <button type="button" data-module="spam" aria-selected="false">Spam</button>
+            <button type="button" data-module="general" aria-selected="false">General</button>
+            <button type="button" data-module="orphaned" aria-selected="false">Orphaned</button>
+            <button type="button" data-module="ringcentral" aria-selected="false">RingCentral</button>
+          </div>
+
+          <div class="module-detail-grid">
+            <article class="module-card">
+              <small>Selected module</small>
+              <h3 id="module-title">Notification module</h3>
+              <p id="module-summary">A focused path for notification-style work.</p>
+              <div class="module-points" id="module-points"></div>
+            </article>
+
+            <article class="module-copy">
+              <h4 id="module-subtitle">Small module, clear purpose.</h4>
+              <p id="module-copy">This module exists so the router has a clean destination instead of pushing everything into one large handler.</p>
+              <ul class="module-list" id="module-list"></ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="deployment">
+        <div class="section-head fade-up">
+          <h2>Whats next?</h2>
+        </div>
+        <div class="deployment-shell fade-up">
+          <div class="deployment-heading">
+            <div class="aws-lockup">
+              <span class="amazon-word">amazon</span>
+              <span class="aws-word">web services</span>
+              <svg class="aws-smile" viewBox="0 -2 180 26" aria-hidden="true">
+                <path d="M12 8c28 24 123 24 152 0"></path>
+                <path d="M151 7l15 1-7 9"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="deployment-frame">
+            <div class="deployment-top">
+              <article class="deployment-summary">
+                <div class="deployment-text">
+                  <p>One internal AWS environment — models, data, orchestration, and monitoring in one place.</p>
+                  <p>Security, execution, storage, and observability inside one scalable AWS-operated stack.</p>
+                </div>
+                <div class="aws-benefits">
+                  <span class="aws-benefit">Internalized stack</span>
+                  <span class="aws-benefit">Secure</span>
+                  <span class="aws-benefit">Scalable</span>
+                </div>
+              </article>
+            </div>
+
+            <div class="aws-graphic" aria-label="AWS deployment graphic">
+              <svg class="aws-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <!-- upper arc: cloud → bedrock, eventbridge, lambda, api -->
+                <path d="M50 42 Q32 30 11 14"></path>
+                <path d="M50 42 Q42 28 33 10"></path>
+                <path d="M50 42 Q58 28 67 10"></path>
+                <path d="M50 42 Q68 30 89 14"></path>
+                <!-- lower arc: cloud → s3, iam, sqs, watch -->
+                <path d="M50 42 Q32 56 11 72"></path>
+                <path d="M50 42 Q42 58 33 78"></path>
+                <path d="M50 42 Q58 58 67 78"></path>
+                <path d="M50 42 Q68 56 89 72"></path>
+                <!-- bottom: cloud → trail -->
+                <path d="M50 42 Q50 64 50 92"></path>
+              </svg>
+
+              <article class="aws-service service-bedrock highlight">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M8 8h8v8H8z"></path><path d="M4 10h2"></path><path d="M18 10h2"></path><path d="M4 14h2"></path><path d="M18 14h2"></path><path d="M10 4v2"></path><path d="M14 4v2"></path><path d="M10 18v2"></path><path d="M14 18v2"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>Bedrock</strong>
+                  <span>Bedrock keeps model computation inside AWS for stronger data security.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-eventbridge">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M8 11l8-4"></path><path d="M8 13l8 4"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>EventBridge</strong>
+                  <span>EventBridge routes internal events between scans, modules, and automations.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-lambda">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M8 5l5 14"></path><path d="M11 14h6"></path><path d="M16 5l-5 9"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>Lambda</strong>
+                  <span>Lambda scales execution automatically as scan and workflow volume grows.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-api">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M5 8h14"></path><path d="M5 16h14"></path><path d="M7 8v8"></path><path d="M17 8v8"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>API Gateway</strong>
+                  <span>API Gateway gives the platform one controlled entry point for requests.</span>
+                </span>
+              </article>
+
+              <article class="aws-cloud">
+                <svg class="aws-cloud-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17h9a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 6 11.2 3 3 0 0 0 7 17z"></path><path d="M9 15.5h6"></path></svg>
+                <small>AWS Cloud</small>
+                <strong>Secure + scalable</strong>
+              </article>
+
+              <article class="aws-service service-sqs">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="5" y="6" width="14" height="3" rx="1"></rect><rect x="5" y="11" width="14" height="3" rx="1"></rect><rect x="5" y="16" width="9" height="3" rx="1"></rect></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>SQS</strong>
+                  <span>SQS buffers spikes so workloads stay reliable under heavy queue volume.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-s3">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><ellipse cx="12" cy="7" rx="6" ry="2.5"></ellipse><path d="M6 7v6c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V7"></path><path d="M6 13v4c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>S3</strong>
+                  <span>S3 stores artifacts, retrieval data, and outputs in durable central storage.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-iam">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 4l6 3v4c0 4.2-2.3 7-6 9-3.7-2-6-4.8-6-9V7z"></path><path d="M12 10v4"></path><path d="M12 17h.01"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>IAM</strong>
+                  <span>IAM enforces scoped permissions across every service in the stack.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-watch">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 16l4-5 3 3 5-7 4 5"></path><path d="M4 19h16"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>CloudWatch</strong>
+                  <span>CloudWatch surfaces logs, metrics, and alerts for runtime visibility.</span>
+                </span>
+              </article>
+
+              <article class="aws-service service-trail">
+                <span class="service-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7 4h7l3 3v13H7z"></path><path d="M14 4v4h4"></path><path d="M10 12h4"></path><path d="M10 16h4"></path></svg>
+                </span>
+                <span class="service-copy">
+                  <strong>CloudTrail</strong>
+                  <span>CloudTrail records actions across the environment for auditing and traceability.</span>
+                </span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="stages">
+        <div class="stages-shell fade-up">
+          <div class="section-head">
+            <h2>Intelligence Division: The future</h2>
+            <p>Capability grows in stages...</p>
+          </div>
+
+          <div class="stage-grid" role="tablist" aria-label="Stages">
+            <button class="stage-card active" type="button" data-stage="stage1" aria-selected="true">
+              <div class="stage-card-top">
+                <span class="stage-num">01</span>
+                <span class="stage-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M10 4C7 4 5 6.1 5 8.9c0 1.4.5 2.6 1.4 3.5-.6 2.2.5 3.8 2.5 4.5"></path><path d="M14 4c3 0 5 2.1 5 4.9 0 1.4-.5 2.6-1.4 3.5.6 2.2-.5 3.8-2.5 4.5"></path><path d="M10 4c.1 1.4.8 2.2 2 2.6"></path><path d="M14 4c-.1 1.4-.8 2.2-2 2.6"></path><path d="M12 6.6v10.8"></path><path d="M8.7 10.2h1.8"></path><path d="M13.5 10.2h1.8"></path><path d="M9.5 15.2H12"></path><path d="M12 15.2h2.5"></path></svg>
+                </span>
+              </div>
+              <span class="stage-label">Stage 1</span>
+              <h3>Cognitive Engine</h3>
+              <p>The first working brain for modular routing and structured execution.</p>
+            </button>
+            <button class="stage-card" type="button" data-stage="stage2" aria-selected="false">
+              <div class="stage-card-top">
+                <span class="stage-num">02</span>
+                <span class="stage-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="6" cy="8" r="2"></circle><circle cx="18" cy="8" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="8" cy="18" r="2"></circle><circle cx="16" cy="18" r="2"></circle><path d="M7.7 9.2l2.7 1.6"></path><path d="M16.3 9.2l-2.7 1.6"></path><path d="M11 13.7l-2 2.6"></path><path d="M13 13.7l2 2.6"></path></svg>
+                </span>
+              </div>
+              <span class="stage-label">Stage 2</span>
+              <h3>Machine Learning</h3>
+              <p>Patterns connect, scores sharpen, and the system learns from prior work.</p>
+            </button>
+            <button class="stage-card" type="button" data-stage="stage3" aria-selected="false">
+              <div class="stage-card-top">
+                <span class="stage-num">03</span>
+                <span class="stage-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M6 5h5"></path><path d="M6 12h12"></path><path d="M13 19h5"></path><circle cx="13" cy="5" r="2"></circle><circle cx="4" cy="12" r="2"></circle><circle cx="20" cy="12" r="2"></circle><circle cx="11" cy="19" r="2"></circle></svg>
+                </span>
+              </div>
+              <span class="stage-label">Stage 3</span>
+              <h3>Symbolic Reasoning</h3>
+              <p>Explicit logic, rules, and validation bring harder structure to the decisions.</p>
+            </button>
+            <button class="stage-card" type="button" data-stage="stage4" aria-selected="false">
+              <div class="stage-card-top">
+                <span class="stage-num">04</span>
+                <span class="stage-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M10 4C7 4 5 6.1 5 8.9c0 1.4.5 2.6 1.4 3.5-.6 2.2.5 3.8 2.5 4.5"></path><path d="M14 4c3 0 5 2.1 5 4.9 0 1.4-.5 2.6-1.4 3.5.6 2.2-.5 3.8-2.5 4.5"></path><path d="M12 6.5v10.5"></path><path d="M15.2 6.8l2-2.3"></path><path d="M16.4 10.5H20"></path><path d="M15.2 13.8l2 2.3"></path><path d="M9.4 9.5h5.1"></path><path d="M9.8 14.5h4.6"></path></svg>
+                </span>
+              </div>
+              <span class="stage-label">Stage 4</span>
+              <h3>Neuro-Symbolic AI</h3>
+              <p>Learning and reasoning combine into a smarter, more controlled future layer.</p>
+            </button>
+          </div>
+
+          <div class="stage-detail-panel">
+            <h3 id="stage-title">Stage 1 · Cognitive Engine</h3>
+            <p id="stage-copy">The first release establishes the modular core: route work cleanly, keep modules separate, and make future intelligence layers possible.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="surface footer-panel fade-up">
+        <div class="footer-mark">
+          <span class="footer-scd">SCD</span>
+          <span class="footer-core">CORE</span>
+        </div>
+        <p class="footer-motto">Modular by design.</p>
+        <p class="footer-subline">Built to adapt.</p>
+        <div class="footer-points">
+          <span class="footer-point">Swappable modules</span>
+          <span class="footer-point">Growing intelligence</span>
+          <span class="footer-point">Reusable core</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const structureData = {
+      orchestrator: {
+        title: 'Orchestrator',
+        copy: 'The orchestrator sits above the whole process and guides it end to end. It is the fast, accurate control layer that keeps the sequence deliberate instead of noisy or scattered.',
+        tags: ['Top controller', 'Fast guidance', 'High accuracy']
+      },
+      scanner: {
+        title: 'Scanner',
+        copy: 'The scanner watches the Jira queue continuously for new and updated tickets. It is the eyes of the system, making sure nothing sits unnoticed.',
+        tags: ['Queue watcher', 'Real-time', 'First trigger']
+      },
+      fetcher: {
+        title: 'Fetcher',
+        copy: 'The process starts by pulling the full Jira ticket context. That gives the rest of the flow enough information to stay fast and accurate.',
+        tags: ['Full context', 'Jira details', 'Clean starting point']
+      },
+      router: {
+        title: 'Router',
+        copy: 'Routing is where the system makes a clean judgment. It picks the best path quickly so work lands in the right place with less friction.',
+        tags: ['Best-fit path', 'Cleaner logic', 'Modular handoff']
+      },
+      modules: {
+        title: 'Module',
+        copy: 'The first brain. The matched module handles its own specialized logic, keeping the center small while each workflow goes deep where it needs to.',
+        tags: ['Brain 1', 'Matched module', 'Deep workflow']
+      },
+      gatekeeper: {
+        title: 'Gatekeeper',
+        copy: 'The second brain. A strict hard-code gate that enforces non-negotiable rules before anything reaches execution. If the data breaks a rule, the gatekeeper blocks it.',
+        tags: ['Brain 2', 'Hard-code rules', 'Strict gate']
+      },
+      human: {
+        title: 'Human',
+        copy: 'The third brain. When confidence is low or stakes are high, the system escalates to GPT or a human reviewer who makes the final call.',
+        tags: ['Brain 3', 'GPT or Human', 'Final authority']
+      },
+      executer: {
+        title: 'Executer',
+        copy: 'The executer updates the Jira ticket with all findings and resolves it. Every action is logged for full traceability.',
+        tags: ['Updates ticket', 'Resolves', 'Full traceability']
+      }
+    };
+
+    const moduleData = {
+      notifications: {
+        title: 'Notification module',
+        summary: 'A focused path for notification-style work.',
+        subtitle: 'Small module, clear purpose.',
+        copy: 'This module exists so the router has a clean destination instead of pushing everything into one large handler.',
+        heroCopy: 'A focused module lets the system route one kind of work without bloating every other path.',
+        heroChips: ['Focused path', 'Reusable', 'Easy to refine'],
+        points: [
+          ['Role', 'Handles notification patterns.'],
+          ['Benefit', 'Keeps this logic out of other modules.']
+        ],
+        list: [
+          'Easy to add or refine.',
+          'Keeps the core small.',
+          'Good fit for repeatable ticket classes.'
+        ]
+      },
+      spam: {
+        title: 'Spam module',
+        summary: 'A separate lane for obvious noise.',
+        subtitle: 'Noise should stay separate.',
+        copy: 'Spam belongs in its own module so the rest of the system stays clean and useful.',
+        heroCopy: 'A spam module keeps low-value work from distorting every other path in the system.',
+        heroChips: ['Noise control', 'Low-value lane', 'Cleaner routing'],
+        points: [
+          ['Role', 'Catches dismissible or spam-like work.'],
+          ['Benefit', 'Protects higher-value modules from clutter.']
+        ],
+        list: [
+          'Separates signal from noise.',
+          'Improves routing clarity.',
+          'Keeps broader logic cleaner.'
+        ]
+      },
+      general: {
+        title: 'General module',
+        summary: 'A controlled catch-all path.',
+        subtitle: 'Broad coverage without a mess.',
+        copy: 'Some work needs a broader module, but it still needs a boundary. General provides that boundary.',
+        heroCopy: 'A general module gives coverage without giving up the modular structure.',
+        heroChips: ['Catch-all', 'Bounded', 'Practical'],
+        points: [
+          ['Role', 'Handles work outside narrower modules.'],
+          ['Benefit', 'Prevents one-offs from breaking the system map.']
+        ],
+        list: [
+          'Useful while module coverage grows.',
+          'Still separate from the core.',
+          'Keeps expansion incremental.'
+        ]
+      },
+      orphaned: {
+        title: 'Orphaned transactions module',
+        summary: 'A deep workflow turned into a module.',
+        subtitle: 'Think of the orphaned transaction file as a module playbook.',
+        copy: 'This path should feel like that orphaned transaction document converted into a reusable module: procedural, exact, and domain-heavy.',
+        heroCopy: 'This is the clearest example of turning a dense operating workflow into a module that can be routed to cleanly.',
+        heroChips: ['Step-based', 'Exact matching', 'Domain workflow'],
+        points: [
+          ['Role', 'Handles orphaned transaction cases.'],
+          ['Benefit', 'Shows how a rich operational process becomes a reusable module.']
+        ],
+        list: [
+          'Fits client references and location cache naturally.',
+          'Supports exact transaction matching and browser-call shortcuts.',
+          'Proves that deep workflows can still stay modular.'
+        ]
+      },
+      ringcentral: {
+        title: 'RingCentral module',
+        summary: 'A dedicated path for phone system work.',
+        subtitle: 'Phone infrastructure stays separate.',
+        copy: 'RingCentral tickets follow their own patterns — provisioning, configuration, call routing, and troubleshooting. A dedicated module keeps this work clean and routable.',
+        heroCopy: 'A RingCentral module isolates phone system work so it routes cleanly without polluting other modules.',
+        heroChips: ['Telephony', 'Provisioning', 'Call routing'],
+        points: [
+          ['Role', 'Handles RingCentral phone system requests.'],
+          ['Benefit', 'Keeps telephony logic separate from general support.']
+        ],
+        list: [
+          'Covers provisioning, config changes, and troubleshooting.',
+          'Recognizes RingCentral-specific patterns and terminology.',
+          'Routes phone system work away from unrelated modules.'
+        ]
+      }
+    };
+
+    const stageData = {
+      stage1: {
+        title: 'Stage 1 · Cognitive Engine',
+        copy: 'The first release establishes the modular core: route work cleanly, keep modules separate, and make future intelligence layers possible.'
+      },
+      stage2: {
+        title: 'Stage 2 · Machine Learning',
+        copy: 'The next layer learns from historical work, improving classification, ranking, and confidence without changing the modular structure.'
+      },
+      stage3: {
+        title: 'Stage 3 · Symbolic Reasoning',
+        copy: 'Structured rules and symbolic checks strengthen decisions so the system becomes more dependable as it expands.'
+      },
+      stage4: {
+        title: 'Stage 4 · Neuro-Symbolic AI',
+        copy: 'Learned proposals combine with explicit reasoning, giving the system a higher ceiling while preserving control and modularity.'
+      }
+    };
+
+    const structureButtons = document.querySelectorAll('.structure-node');
+    const tabButtons = document.querySelectorAll('.module-tabs button');
+    const ragToggle = document.getElementById('rag-toggle');
+    const ragPanel = document.getElementById('rag-panel');
+    const structureTitle = document.getElementById('structure-title');
+    const structureCopy = document.getElementById('structure-copy');
+    const structureTags = document.getElementById('structure-tags');
+    const moduleTitle = document.getElementById('module-title');
+    const moduleSummary = document.getElementById('module-summary');
+    const moduleSubtitle = document.getElementById('module-subtitle');
+    const moduleCopy = document.getElementById('module-copy');
+    const modulePoints = document.getElementById('module-points');
+    const moduleList = document.getElementById('module-list');
+
+    function renderStructure(key) {
+      const structure = structureData[key];
+      structureTitle.textContent = structure.title;
+      structureCopy.textContent = structure.copy;
+      structureTags.innerHTML = structure.tags.map((tag) => '<span class="structure-tag">' + tag + '</span>').join('');
+
+      structureButtons.forEach((button) => {
+        const active = button.dataset.structure === key;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+
+    function renderModule(key) {
+      const module = moduleData[key];
+      moduleTitle.textContent = module.title;
+      moduleSummary.textContent = module.summary;
+      moduleSubtitle.textContent = module.subtitle;
+      moduleCopy.textContent = module.copy;
+      modulePoints.innerHTML = module.points.map(([label, value]) => '<div class="module-point"><strong>' + label + '</strong><span>' + value + '</span></div>').join('');
+      moduleList.innerHTML = module.list.map((item) => '<li>' + item + '</li>').join('');
+
+      tabButtons.forEach((button) => {
+        const active = button.dataset.module === key;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
+
+    structureButtons.forEach((button) => {
+      const activate = () => renderStructure(button.dataset.structure);
+      button.addEventListener('mouseenter', activate);
+      button.addEventListener('focus', activate);
+      button.addEventListener('click', activate);
+    });
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => renderModule(button.dataset.module));
+    });
+
+    if (ragToggle && ragPanel) {
+      ragToggle.addEventListener('click', () => {
+        const expanded = ragToggle.getAttribute('aria-expanded') === 'true';
+        ragToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        ragPanel.hidden = expanded;
+      });
+    }
+
+    const stageButtons = document.querySelectorAll('.stage-card');
+    const stageTitle = document.getElementById('stage-title');
+    const stageCopy = document.getElementById('stage-copy');
+
+    stageButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        stageButtons.forEach((item) => {
+          item.classList.remove('active');
+          item.setAttribute('aria-selected', 'false');
+        });
+        button.classList.add('active');
+        button.setAttribute('aria-selected', 'true');
+        const stage = stageData[button.dataset.stage];
+        stageTitle.textContent = stage.title;
+        stageCopy.textContent = stage.copy;
+      });
+    });
+
+    renderStructure('scanner');
+    renderModule('notifications');
+
+    const fadeUpElements = document.querySelectorAll('.fade-up');
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14 });
+
+      fadeUpElements.forEach((element) => observer.observe(element));
+    } else {
+      fadeUpElements.forEach((element) => element.classList.add('visible'));
+    }
+  </script>
+</body>
+</html>
